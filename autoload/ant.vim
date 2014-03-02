@@ -82,14 +82,14 @@ function! ant#complete(findstart, base)
         call ant#attr_completion(s:tag, a:base, res, "=")
 
       elseif s:tag_kind == s:TAG_KIND_BRACE
-        call s:bind_attr_completion(s:tag, a:base, res)
+        call s:property_completion(a:base, res)
       endif
 
     elseif s:complete_mode == s:MODE_VALUE
       call s:value_completion(s:tag, s:property, a:base, res)
 
     elseif s:complete_mode == s:MODE_BINDING
-      call s:binding_completion(a:base, res)
+      call s:property_completion(a:base, res)
     endif
     return res
   endif
@@ -176,19 +176,9 @@ function! ant#attr_completion(tag, base, res, append)
   endif
 endfunction
 
-function! s:bind_attr_completion(tag, base, res)
-  if !antcore#isBindingExist(a:tag)
-    return
-  endif
-
-  let item = antcore#getBinding(a:tag)
-  for member in item.members
-    if member.name =~ '^' . a:base
-      call add(a:res, antcore#member_to_compitem(item.name, member))
-    endif
-  endfor
+function! s:property_completion(base, res)
   " find x:Name and Name and x:Key
-  for member in s:names()
+  for member in s:properties()
     call insert(a:res, antcore#member_to_compitem('', member), 0)
   endfor
 endfunction
@@ -224,16 +214,6 @@ function! s:value_completion(tag, prop, base, res)
   endif
 endfunction
 
-function! s:binding_completion(base, res)
-  for key in keys(s:binding)
-    if key =~ a:base
-      let item = antcore#getBinding(key)
-      call add(a:res, antcore#member_to_compitem(key, item))
-    endif
-  endfor
-  return antcore#prop('', '')
-endfunction
-
 function! s:find_member_type(src, tag, prop)
   if !exists('a:src[ a:tag ]')
     return
@@ -253,20 +233,14 @@ function! s:find_member_type(src, tag, prop)
   return antcore#prop('', '')
 endfunction
 
-function! s:names()
+function! s:properties()
   let names = []
   let lines = getline(1, line('$'))
   let class = ''
   for line in lines
-    if line =~ '\<x:Name='
-      let start = matchstr(line, "\<x:Name")
-      let class = 'x:Name'
-    elseif line =~ '\<Name='
-      let start = matchstr(line, "\<Name")
-      let class = 'Name'
-    elseif line =~ '\<x:Key='
-      let start = matchstr(line, "\<x:Key")
-      let class = 'x:Key'
+    if line =~ '<property\>.*\<name\>='
+      let start = matchstr(line, "\<name\>=")
+      let class = 'property'
     else
       continue
     endif

@@ -1,12 +1,12 @@
- call antcore#namespace('')
+call antcore#namespace('')
 
- call antcore#class('project', '', [ 
+call antcore#class('project', '', [ 
   \ antcore#attr('name', ''),
   \ antcore#attr('default', ''),
   \ antcore#attr('basedir', ''),
   \ ])
 
- call antcore#class('target', '', [ 
+call antcore#class('target', '', [ 
   \ antcore#attr('name', ''),
   \ antcore#attr('depends', ''),
   \ antcore#attr('if', ''),
@@ -14,10 +14,19 @@
   \ antcore#attr('description', ''),
   \ ])
 
- call antcore#class('task', '', [ 
+call antcore#class('task', '', [ 
   \ antcore#attr('id', ''),
   \ antcore#attr('taskname', ''),
   \ antcore#attr('description', ''),
+  \ ])
+
+call antcore#class('property', '', [ 
+  \ antcore#attr('name',''),
+  \ antcore#attr('value',''),
+  \ antcore#attr('location',''),
+  \ antcore#attr('file',''),
+  \ antcore#attr('refid',''),
+  \ antcore#attr('environment',''),
   \ ])
 
 call antcore#class('filelset', '', [
